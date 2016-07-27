@@ -70,7 +70,8 @@ Yes
 
 A given user will have at least 1 account registered to their user record (i.e., a Google or Salesforce account). Users can (and normally do) have several accounts associated with their user profile. To fetch the list of accounts that a user has linked, call this endpoint. Some important notes:
 - `Sync.NeedsAuth` will be `true` if the user needs to re-authenticate with this service provider. Syncing with this account will remain inactive until this is done
-- `Sync.PushEnabled` will be `true` if events created in this account should be automatically pushed to the user's other linked account(s)
+- `Sync.SyncEnabled` will be `true` if events created in this account should be automatically pushed to the user's other linked account(s)
+- `Sync.SyncPrivateEvents` will be `true` if private events created in this account should be automatically pushed to the user's other linked account(s)
 - If the account is a Salesforce account, the `SalesforceSettings` value *will be* populated, and the `NonSalesforceSettings` value will be empty. The inverse is also true for non-Salesforce accounts
 - The `IsEventDefault` value is `true` if the user has marked this account as one that should have events created in it by default when adding them
 - The Salesforce `ManyWhoOn` value will be `true` if the user's Salesforce organization has "Shared activities" enabled
@@ -122,7 +123,8 @@ Yes
       },
       "Sync": {
         "NeedsAuth": false,
-        "PushEnabled": true
+        "SyncEnabled": true,
+        "SyncPrivateEvents": false
       },
       "NonSalesforceSettings": {
         "AddSalesforceInvitees": true
@@ -384,7 +386,8 @@ Users can update certain values on a given linked account they have with Activit
 - `settings` (**optional**) - a map of the following values:
 	- `AddSalesforceInvitees` (**optional**) - boolean indicating if this account (non-Salesforce only) should have Salesforce invitees automatically added here
 - `sync` (**optional**) - a map of the following values:
-	- `PushEnabled` (**optional**) - whether events created in this account should be copied to other linked accounts
+	- `SyncEnabled` (**optional**) - whether events created in this account should be copied to other linked accounts. If `false`, `SyncPrivateEvents` will automatically be turned off
+	- `SyncPrivateEvents` (**optional**) - whether private events created in this account should be copied to other linked accounts. If `true`, `SyncEnabled` will be set to `true` automatically
 - `shared_calendars` (**optional**) - an array of maps with `Color` and `ID` properties. If this value is included, any calendars that are not included will be removed
 
 **Supports internal override?**
@@ -404,7 +407,8 @@ No
     "AddSalesforceInvitees": true
   },
   "sync": {
-    "PushEnabled": true
+    "SyncEnabled": true,
+    "SyncPrivateEvents": false
   },
   "shared_calendars": [
     {
