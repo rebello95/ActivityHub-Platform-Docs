@@ -1,6 +1,3 @@
-# Overview
-This repository contains all source code for ActivityHub Cloud, and serves as a development environment. All Cloud Code/JavaScript files are contained in the `/cloud` folder, and there are links below to various ReadMe `.md` files throughout the repo which provide detailed documentation on each endpoint, as well as info on some key internal utility functions.
-
 # Documentation
 ### Notes before you get started
 - Most functions documented are accessible as an authenticated ActivityHub user by passing in a `token` value in the body of your REST request
