@@ -1,0 +1,74 @@
+# Data Tables
+***
+Below is a list of tables that are actively being used by ActivityHub, and brief summaries of each.
+
+***
+
+- `_Installation`
+	- Standard Parse object, used for keeping track of devices that have been logged in to ActivityHub
+- `_Session`
+	- Standard Parse object, tracks session tokens for all users
+- `access_grant`
+	- Table used for storing information on clients/apps that have credentials (keys/secrets) that can be used to make requests to authorize users with the ActivityHub API
+- `account_linked`
+	- Each record represents an external account linked to a `_User`'s profile
+- `account_type`
+	- Each record represents a type of `account_linked` that can be created (i.e., Salesforce)
+- `analytics_data`
+	- Table used to store data points for any given action of a user
+- `analytics_group`
+	- Allows for categorization of `analytics_type` objects
+- `analytics_type`
+	- Used to classify `analytics_data` records into categories which are then summarized into `analytics_group`s
+- `bot_context`
+	- Stores contextual information on a given conversation that a user is having with a bot (i.e., what task is being processed and what information is being updated)
+- `bot_message`
+	- Represents a message sent by either an ActivityHub user or a bot. These generally pertain to `bot_context` values
+- `client_daily_usage`
+	- Stores one record per day for a given `access_grant` record, indicating the number of API calls that client has used for that day
+- `enterprise_prefs`
+	- Allows for customizing keys used to authenticate users with external services depending on an email domain that a given user has, as well as for setting default preferences
+- `event`
+	- Represents an event in a given `account_linked`'s calendar
+- `event_attachment`
+	- A file attached to a given event in our database
+- `event_invitee`
+	- Represents a person invited to an event in a given `account_linked`
+- `event_match`
+	- Acts as a junction between multiple `event` objects in a single `_User`'s external accounts, allowing for updating multiple at once
+- `event_template`
+	- Used to hold sets of default information that a user can create new events with
+- `last_sync`
+	- The record (should only be 1) indicates the last time our server successfully synced users' data with external services and the timeframe requested
+- `license_feature`
+	- 1 feature that can be associated with a `license_type`
+- `license_purchase`
+	- Contains data on when a given user purchased a license
+- `license_type`
+	- A type of license that can be assigned to a given `_User`. These may be company-specific or generic
+- `link_account_session`
+	- Contains information on a login session that a user is using to log in to an external account
+- `oauth_key`
+	- Contains keys used for authenticating different `account_type`s with external services
+- `phone_provision`
+	- Each record represents a phone number that the platform has provisioned from Twilio for usage
+- `sms_group`
+	- Used to manage recipients of a text (SMS) group chat curated via ActivityHub
+- `sms_message`
+	- Represents an SMS message sent to 1 or more recipients via ActivityHub
+- `survey`
+	- Each record contains a question and potential answers that users can be asked to respond to
+- `survey_response`
+	- A given user's response to a `survey`
+- `task`
+	- Represents a task in a given `account_linked`
+- `task_invitee`
+	- Contains information on a contact/invitee on a given `task`
+- `task_template`
+	- Used to hold sets of default information that a user can create new tasks with
+- `user_prefs`
+	- A preferences object holding data on a given `_User`'s profile
+- `user_usage`
+	- Has information such as when a user was last seen
+- `verify_phone`
+	- Temporarily stores verification codes for phone numbers being verified for use with ActivityHub

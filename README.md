@@ -1,3 +1,6 @@
+# Overview
+This repository contains all source code for ActivityHub Cloud, and serves as a development environment. All Cloud Code/JavaScript files are contained in the `/cloud` folder, and there are links below to various ReadMe `.md` files throughout the repo which provide detailed documentation on each endpoint, as well as info on some key internal utility functions.
+
 # Documentation
 ### Notes before you get started
 - Most functions documented are accessible as an authenticated ActivityHub user by passing in a `token` value in the body of your REST request
@@ -27,16 +30,16 @@ Endpoints are grouped into categories. See this table for links to each ReadMe.
 	- Creating GoToMeeting data, as well as detecting it in an event
 8. [Phones and SMS](../master/documentation/Phones%20and%20SMS.md)
 	- ActivityHub has some pretty neat capabilities via SMS, documented here
-9. Bots!
-	- Not publicly available
+9. [Bots!](../master/documentation/Bots.md)
+	- Information on how to utilize our growing bot functionality
 10. [Surveys](../master/documentation/Surveys.md)
 	- Getting and responding to surveys
 11. [Utilities](../master/documentation/Utilities.md)
 	- Various helper functions pertaining to general data and location services.
-12. Event state machine & task syncing
-	- Not publicly available
-13. Data tables
-	- Not publicly available
+12. [Event state machine & task syncing](../master/documentation/State%20Machine.md)
+	- Details on how ActivityHub syncs events and tasks between all users' calendars, our database, and Salesforce
+13. [Data tables](../master/documentation/Tables.md)
+	- Brief summaries of each table in our database
 
 ***
 ### Universal error handling

@@ -7,6 +7,14 @@
 - [Starting a conversation](../documentation/Phones%20and%20SMS.md#starting-a-conversation)
 - [Receiving SMS messages](../documentation/Phones%20and%20SMS.md#receiving-sms-messages)
 
+#### Internal functions
+- [`sendSMS()`](../documentation/Phones%20and%20SMS.md#sendsms)
+- [`storeSentGroupSMS()`](../documentation/Phones%20and%20SMS.md#storesentgroupsms)
+- [`sendAccountNotLinkedSMS()`](../documentation/Phones%20and%20SMS.md#sendaccountnotlinkedsms)
+- [`formatPhone()`](../documentation/Phones%20and%20SMS.md#formatphone)
+- [`friendlyPhone()`](../documentation/Phones%20and%20SMS.md#friendlyphone)
+- [`provisionTwilioNumber()`](../documentation/Phones%20and%20SMS.md#provisiontwilionumber)
+
 ***
 ## Endpoints
 ### Add a phone number
@@ -155,4 +163,101 @@ Hidden
 
 }
 ```
+***
+## Internal functions
+### sendSMS()
+**Discussion**
+
+This function can be called internally to send a text message via Twilio to any set of phone numbers.
+- Phone number formats are corrected after being passed into the function. However, the numbers **must contain their respective country codes**
+- Each text is sent individually (not as a group text), due to [Twilio restrictions](https://www.twilio.com/help/faq/sms/can-i-set-up-one-api-call-to-send-messages-to-a-list-of-people)
+
+**File**: `/src/sms_handling.js`
+
+**Function**: `sendSMS(message, to, from)`
+
+**Arguments**
+- `message` - a string containing the content of the SMS you're sending
+- `to` - an array of strings representing phone numbers (see discussion above)
+- `from` - a valid Twilio phone number to send the text from (defaults to the number specified in Parse configs)
+
+**Returns**: A promise resolved upon sending all texts
+***
+### storeSentGroupSMS()
+**Discussion**
+
+This function should be used as a convenience method to store text messages being sent by a user or bot via SMS within our database in the `sms_message` table.
+
+**File**: `/src/sms_handling.js`
+
+**Function**: `storeSentGroupSMS(group, message, isBot, sender, sidebarTo, sidebarUser)`
+
+**Arguments**
+- `group` - the `sms_group` this message is associated with
+- `message` - the text of the message that was sent
+- `isBot` - indicates whether an ActivityHub bot sent the message
+- `sender` - optional, the phone number string of the person sending the text
+- `sidebarTo` - optional, the phone number the bot is sending a sidebar message to
+- `sidebarUser` - optional, the `_User` that the bot is sidebarring with
+
+**Returns**: A promise resolved with the `sms_message` record once saved
+***
+### sendAccountNotLinkedSMS()
+**Discussion**
+
+If a user texts an ActivityHub number using a phone number that has not yet been added to ActivityHub, this function should be used to send a text back to the user providing them with a notice as well as further instructions. The `storeSentGroupSMS()` should also be manually called when calling this function.
+
+**File**: `/src/sms_handling.js`
+
+**Function**: `sendAccountNotLinkedSMS(toNumber, fromNumber, group)`
+
+**Arguments**
+- `toNumber` - phone number string to send the text to
+- `fromNumber` - a valid Twilio phone number string (from the `phone_provision` table)
+- `group` - the `sms_group` record that this message is being sent into
+
+**Returns**: A promise resolved upon sending the text
+***
+### formatPhone()
+**Discussion**
+
+This function is used to easily correct mis-formatted phone numbers (and convert numbers into strings if necessary).
+
+**File**: `/src/sms_handling.js`
+
+**Function**: `formatPhone(number)`
+
+**Arguments**
+- `number` - a number or string containing a phone number
+
+**Returns**: A text-ready phone number string in the format of `+12223334444`
+***
+### friendlyPhone()
+**Discussion**
+
+Since phone numbers are stored as Twilio-friendly strings in our database, this function can be used to re-format phone numbers and make them look more friendly to humans.
+
+**File**: `/src/sms_handling.js`
+
+**Function**: `friendlyPhone(phoneString, parentheses)`
+
+**Arguments**
+- `phoneString` - a phone number string formatted as normal in the database (like `+12223334444`)
+- `parentheses` - should be `true` if you'd like the first 3 digits to be enclosed in parentheses (like an area code). Defaults to `false`
+
+**Returns**: A phone number string formatted like either `111 222 3333` or `(111) 222 3333`
+***
+### provisionTwilioNumber()
+**Discussion**
+
+Twilio allows developers to dynamically provision new phone numbers. This function takes advantage of that by providing a convenient way to do that internally. *Unfortunately, phone numbers will still have to be manually hooked up to services and webooks, as Twilio doesn't allow this via their API yet.*
+
+**File**: `/src/sms_handling.js`
+
+**Function**: `provisionTwilioNumber()`
+
+**Arguments**
+None
+
+**Returns**: A promise containing a new `phone_provision` record on success, or `null`
 ***

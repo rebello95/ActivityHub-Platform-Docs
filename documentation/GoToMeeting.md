@@ -4,6 +4,9 @@
 #### Endpoints
 - [Creating a meeting](../documentation/GoToMeeting.md#creating-a-meeting)
 
+#### Internal functions
+- [`goToMeetingInfoFromNotes()`](../documentation/GoToMeeting.md#gotomeetinginfofromnotes)
+
 ***
 ## Endpoints
 ### Creating a meeting
@@ -45,3 +48,39 @@ Yes
 }
 ```
 ***
+## Internal functions
+### goToMeetingInfoFromNotes()
+**Discussion**
+
+This function can be used to determine if an event's notes (or just a string in general) contains information on a GoToMeeting. This uses smart detection based on known GoToMeeting formatting. If information is found, it formats it before returning (including a handy feature for making the phone numbers include the access code).
+
+**File**: `/src/salesforce_objects.js`
+
+**Function**: `goToMeetingInfoFromNotes(eventNotes)`
+
+**Arguments**
+- `eventNotes` - a string (generally notes from a calendar event) that could potentially contain GoToMeeting conference call information
+
+**Returns**: The following data structure.
+```
+{
+  "MeetingURL": "https://www.gotomeeting.com/join/293386789",
+  "MeetingID": "293386789",
+  "PhoneNumbers": {
+    "France (toll-free)": "0805541052,,293386789#",
+    "United States (toll-free)": "18773092070,,293386789#",
+    "Switzerland (toll-free)": "0800000452,,293386789#",
+    "Japan (toll-free)": "0120242200,,293386789#",
+    "India (toll-free)": "0008001008227,,293386789#",
+    "Germany (toll-free)": "08007235274,,293386789#",
+    "United Kingdom (toll-free)": "08000314727,,293386789#",
+    "Singapore (toll-free)": "8001013000,,293386789#",
+    "United States": "1(571)317-3116,,293386789#",
+    "Australia (toll-free)": "1800191358,,293386789#",
+    "Canada (toll-free)": "18777773281,,293386789#",
+    "Ireland (toll-free)": "1800818263,,293386789#"
+  }
+}
+```
+***
+

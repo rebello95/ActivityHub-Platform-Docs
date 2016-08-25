@@ -2,21 +2,41 @@
 
 ## Table of contents
 #### Endpoints
-- [Get available account types](../documentation/User%20Management.md#get-available-account-types)
-- [Get a user's list of accounts](../documentation/User%20Management.md#get-a-users-list-of-accounts)
-- [Get a user's full profile details](../documentation/User%20Management.md#get-a-users-full-profile-details)
-- [Remove a linked account](../documentation/User%20Management.md#remove-a-linked-account)
-- [Update a linked account](../documentation/User%20Management.md#update-a-linked-account)
-- [Get all lock-able features](../documentation/User%20Management.md#get-all-lock-able-features)
-- [Get available licenses](../documentation/User%20Management.md#get-available-licenses)
-- [Get a license suggestion for a user](../documentation/User%20Management.md#get-a-license-suggestion-for-a-user)
-- [Upgrade a user after completing a purchase](../documentation/User%20Management.md#upgrade-a-user-after-completing-a-purchase)
-- [Refresh the access token for a linked account](../documentation/User%20Management.md#refresh-the-access-token-for-a-linked-account)
-- [Update a user's list view filters](../documentation/User%20Management.md#update-a-users-list-view-filters)
-- [Get event/task templates for a user](../documentation/User%20Management.md#get-eventtask-templates-for-a-user)
-- [Create/update an event or task template](../documentation/User%20Management.md#createupdate-an-event-or-task-template)
-- [Delete event/task templates for a user](../documentation/User%20Management.md#delete-eventtask-templates-for-a-user)
-- [Update a user's preferences](../documentation/User%20Management.md#update-a-users-preferences)
+- [Get available account types](#get-available-account-types)
+- [Get a user's list of accounts](#get-a-users-list-of-accounts)
+- [Get a user's full profile details](#get-a-users-full-profile-details)
+- [Remove a linked account](#remove-a-linked-account)
+- [Update a linked account](#update-a-linked-account)
+- [Get all lock-able features](#get-all-lock-able-features)
+- [Get available licenses](#get-available-licenses)
+- [Get a license suggestion for a user](#get-a-license-suggestion-for-a-user)
+- [Upgrade a user after completing a purchase](#upgrade-a-user-after-completing-a-purchase)
+- [Refresh the access token for a linked account](#refresh-the-access-token-for-a-linked-account)
+- [Update a user's list view filters](#update-a-users-list-view-filters)
+- [Get event/task templates for a user](#get-eventtask-templates-for-a-user)
+- [Create/update an event or task template](#createupdate-an-event-or-task-template)
+- [Delete event/task templates for a user](#delete-eventtask-templates-for-a-user)
+- [Update a user's preferences](#update-a-users-preferences)
+
+#### Jobs
+- [Downgrade expired users](#downgrade-expired-users)
+
+#### beforeSave triggers
+- [link_account_session](#link_account_session)
+- [access_grant](#access_grant)
+- [user_prefs](#user_prefs)
+- [account_linked](#account_linked)
+- [enterprise_prefs](#enterprise_prefs)
+- [event_template](#event_template)
+- [task_template](#task_template)
+
+#### afterSave triggers
+- [account_linked](#account_linked-1)
+- [license_purchase](#license_purchase)
+
+#### afterDelete triggers
+- [_User](#_user)
+- [account_linked](#account_linked-2)
 
 ***
 ## Endpoints
@@ -25,6 +45,7 @@
 
 The ActivityHub platform is designed to allow for *dynamically adding support for new accounts* on a given client without pushing any updates to the client's code. In order to take advantage of this, you'll need to grab details on available accounts from this endpoint.
 - `EventsSupported` should only be `false` for odd accounts like GoToMeeting. We recommend **not** supporting dynamic adding of accounts where this value is set to `false`, as there is little likelihood that their uses will be universal
+- `SandboxSupported` will be `true` for accounts like Salesforce that support production and sandbox instances (and different login pages for both)
 - `InviteesSupported` will be `false` for accounts that don't support fetching/posting invitees and contacts. Microsoft Live would be an example of this
 - `AllowsSignup` is `true` for accounts that allow for sign-ups. For example, a user is allowed to sign up with a Google account, but not with a GoToMeeting account
 - `OnePerUser` indicates if the user is limited to adding 1 of these accounts to their profile. As an example, users can only have 1 Salesforce account associated with their profile (they can, however, sign out and sign in with the account in order to create a new profile)
@@ -56,9 +77,13 @@ Yes
       "AllowsSignup": true,
       "OnePerUser": false,
       "LogoMedium": {
-        "URL": "http://example.domain.com/Office365.png"
+        "URL": "http://example.domain.com/Office365-dbe2.png"
+      },
+      "LogoSquare": {
+        "URL": "http://example.domain.com/Office365-sdfe.png"
       },
       "EventsSupported": true,
+      "SandboxSupported": false,
       "Name": "Office 365"
     }
   ]
@@ -72,7 +97,7 @@ A given user will have at least 1 account registered to their user record (i.e.,
 - `Sync.NeedsAuth` will be `true` if the user needs to re-authenticate with this service provider. Syncing with this account will remain inactive until this is done
 - `Sync.SyncEnabled` will be `true` if events created in this account should be automatically pushed to the user's other linked account(s)
 - `Sync.SyncPrivateEvents` will be `true` if private events created in this account should be automatically pushed to the user's other linked account(s)
-- If the account is a Salesforce account, the `SalesforceSettings` value *will be* populated, and the `NonSalesforceSettings` value will be empty. The inverse is also true for non-Salesforce accounts
+- If the account *is* a Salesforce account, the `SalesforceSettings` value will be **non-null**, and the `NonSalesforceSettings` value will be `null`. The inverse is also true for non-Salesforce accounts
 - The `IsEventDefault` value is `true` if the user has marked this account as one that should have events created in it by default when adding them
 - The Salesforce `ManyWhoOn` value will be `true` if the user's Salesforce organization has "Shared activities" enabled
 - The non-Salesforce `AddSalesforceInvitees` value is `true` if the user expects a given client to automatically copy Salesforce invitees to this account's event (if it exists) while they are selecting them
@@ -174,12 +199,14 @@ Yes
     "Description": "Wow this is such a good license",
     "Name": "Example license",
     "LicenseID": "moIPrTfrWG",
-    "Tier": 2
+    "Tier": 2,
+    "Expires": "2017-01-01"
   },
   "Details": {
     "JobTitle": "",
     "HasBetaAccess": false,
     "Username": "john.doe-287",
+    "ID": "moIPr2s21s",
     "Phone": "",
     "VerifiedPhones": [
       "+12223334444"
@@ -190,15 +217,15 @@ Yes
   },
   "Preferences": {
     "DisplayFilters": {
-      "ActivityType": [
+      "Show": [
         "Events",
         "Tasks"
       ],
-      "Priorities": [
+      "TaskPriorities": [
         "High"
       ],
-      "SearchType": 1,
-      "Statuses": [
+      "SearchType": "Subject",
+      "TaskStatuses": [
         "Not Started"
       ]
     },
@@ -282,15 +309,17 @@ Yes
           ]
         }
       },
-      "MainFields": {},
+      "MainFields": {
+        "Account": {
+          "PrimaryAPIName": "Name",
+          "SecondaryAPIName": "Example_Field__c",
+          "PrimaryType": "string",
+          "SecondaryType": "boolean"
+        }
+      },
       "ObjectSelections": [
         {
           "FieldsShowing": [
-            {
-              "Name": "Phone",
-              "SFAPIName": "Phone",
-              "SFType": "phone"
-            },
             {
               "Name": "Type",
               "SFAPIName": "Type",
@@ -312,22 +341,13 @@ Yes
           "Name": "Contacts",
           "Prefix": "003",
           "SFAPIName": "Contact"
-        },
-        {
-          "FieldsShowing": [
-            {
-              "Name": "Last Login",
-              "SFAPIName": "LastLoginDate",
-              "SFType": "datetime"
-            }
-          ],
-          "Name": "Users",
-          "Prefix": "005",
-          "SFAPIName": "User"
         }
       ],
-      "RecordTypeIDs": {
-        "Event": "012000000000000AAA",
+      "RecordTypes": {
+        "Event": {
+          "Name": "Master",
+          "TypeID": "012000000000000AAA"
+        },
         "Task": null
       },
       "ShowInvitations": false
@@ -384,7 +404,7 @@ Users can update certain values on a given linked account they have with Activit
 	- `IsEventDefault` (**optional**) - boolean indicating if this user's account should have events created in it by default
 	- `Nickname` (**optional**) - a nickname that a user provides for this account
 - `settings` (**optional**) - a map of the following values:
-	- `AddSalesforceInvitees` (**optional**) - boolean indicating if this account (non-Salesforce only) should have Salesforce invitees automatically added here
+	- `AddSalesforceInvitees` (**optional**) - boolean indicating if this account (non-Salesforce only) should have Salesforce invitees automatically added here. If called on a Salesforce account, this value will be **ignored**
 - `sync` (**optional**) - a map of the following values:
 	- `SyncEnabled` (**optional**) - whether events created in this account should be copied to other linked accounts. If `false`, `SyncPrivateEvents` will automatically be turned off
 	- `SyncPrivateEvents` (**optional**) - whether private events created in this account should be copied to other linked accounts. If `true`, `SyncEnabled` will be set to `true` automatically
@@ -555,7 +575,17 @@ No
     "Purchases_iOS": {
       "12Month": "com.ios.xyz.test2",
       "1Month": "com.ios.xyz.test2"
-    }
+    },
+    "Features": [
+      {
+        "ID": "XVzOR72cQ4",
+        "Name": "Salesforce Accounts"
+      },
+      {
+        "ID": "RI48iTZ3mR",
+        "Name": "Task Templates"
+      }
+    ]
   }
 }
 ```
@@ -646,7 +676,7 @@ In addition to the function above, there is an internally available function whi
 ### Update a user's list view filters
 **Discussion**
 
-This endpoint takes filter items and updates them in the `user_prefs` object. If there are no settings, it creates them. Returns the ID of the preferences object.
+This endpoint takes filter parameters and updates them in the `user_prefs` object. If there are no settings, it creates them. Validated filters are returned upon a successful call.
 
 **File**: `/src/manage_users.js`
 
@@ -654,10 +684,11 @@ This endpoint takes filter items and updates them in the `user_prefs` object. If
 
 **Parameters**
 - `token` (**required**) - a valid ActivityHub authentication token for this user
-- `search_type` (**optional**) - An int. [0 == 'Related to', 1 == 'Subject']
-- `activity_type` (**optional**) - Array of 'Events' and or 'Tasks'
-- `priorities` (**optional**) - Array of priority types
-- `statuses` (**optional**) - Array of status types
+- `filters` (**required**) - map of the following values:
+	- `Show` (**optional**) - an array with the potential values "Events" and "Tasks"
+	- `SearchType` (**optional**) - either "Subject" or "RelatedTo". **Specifying "RelatedTo" will force "Show" to be `["Tasks"]`**
+	- `TaskPriorities` (**optional**) - array of Salesforce task priority strings
+	- `TaskStatuses` (**optional**) - array of Salesforce task status strings
 
 **Supports internal override?**
 No
@@ -666,23 +697,32 @@ No
 ```
 {
   "token": "XXXXX",
-  "activity_type": [
-    "Tasks"
-  ],
-  "search_type": 1,
-  "priorities": [
-    "Normal"
-  ],
-  "statuses": [
-    "Open"
-  ]
+  "filters": {
+      "Show": ["Events", "Tasks"],
+      "SearchType": "Subject",
+      "TaskPriorities": ["Low", "High"],
+      "TaskStatuses": ["Not Started"]
+  }
 }
 ```
 
 **Example response**
 ```
 {
-	"ID": "GehsQnsBrP"
+  "DisplayFilters": {
+    "SearchType": "Subject",
+    "Show": [
+      "Events",
+      "Tasks"
+    ],
+    "TaskPriorities": [
+      "Low",
+      "High"
+    ],
+    "TaskStatuses": [
+      "Not Started"
+    ]
+  }
 }
 ```
 ***
@@ -714,11 +754,11 @@ No
   "EventTemplates": [
     {
       "Details": {
+        "ID": "nor2MaXVOu",
         "Nickname": "Standard Meeting"
       },
       "Presets": {
         "AllDay": false,
-        "ID": "nor2MaXVOu",
         "Location": "Starbucks",
         "Notes": "Bring charger",
         "Private": false,
@@ -735,10 +775,10 @@ No
   "TaskTemplates": [
     {
       "Details": {
+        "ID": "wmIzp8fGTO",
         "Nickname": "Template #1"
       },
       "Presets": {
-        "ID": "wmIzp8fGTO",
         "Notes": "Example notes",
         "Priority": "Normal",
         "SalesforceData": {
@@ -812,8 +852,7 @@ Yes
 **Example response**
 ```
 {
-  "Created": 0,
-  "Updated": 1
+  "TemplateID": "lkj3jds09e"
 }
 ```
 ***
@@ -860,9 +899,9 @@ This endpoint takes preference items and updates them in the user object. If the
 **Parameters**
 - `token` (**required**) - a valid ActivityHub authentication token for this user
 - `preferences` (**required**) - map of the following keys/values
-	- `EventReminderMinutes` (**optional**) - int value: 0, 10, 15, 30, 60
+	- `EventReminderMinutes` (**optional**) - int value: `-1` (no reminders), `0`, `10`, `15`, `30`, `60`
 	- `FollowUpSuggestions` (**optional**) - boolean indicating if follow up suggestions should trigger
-	- `SalesforceOnly` (**optional**) - map of the following keys/values
+	- `SalesforceOnly` (**optional**) - map of the following keys/values. These are **ignored** if the user doesn't have a Salesforce account linked
 		- `AutoFindInvitees` (**optional**) - boolean value indicating if auto find invitees should trigger
 		- `ShowInvitations` (**optional**) - boolean value indicating if salesforce invitations should be shown
 		- `GlyphsOn` (**optional**) - boolean, shows 'related to' object glyph on events/tasks
@@ -875,7 +914,6 @@ No
 ```
 {
   "token": "XXXXX",
-  "account_id": "d9Ev3H73v8",
   "preferences": {
     "EventReminderMinutes": 15,
     "FollowUpSuggestions": true,
@@ -891,15 +929,79 @@ No
 **Example response**
 ```
 {
-  "ID": "GehsQnsBrP",
-  "Profile": {
-    //Will be exactly the same as what's returned by get_user_info
-  },
-  "Response": {
-    "IsNew": false,
-    "AccessToken": "XXXXX",
-    "RedirectURL": "localhost://callback"
-  }
+  "ID": "GehsQnsBrP"
 }
 ```
+***
+
+## Jobs
+### Downgrade expired users
+**Discussion**
+
+This job checks every existing user in our database to see if they have an expired subscription. Upon identifying these users, it changes their associated license and removes their expiration date.
+
+**File**: `/src/manage_users.js`
+
+**Job**: `downgrade_users`
+***
+
+## beforeSave triggers
+### `link_account_session`
+**Discussion**
+
+For **new** objects, this trigger sets the ACL on the record to `Master key only`.
+***
+### `access_grant`
+**Discussion**
+
+For **new** objects, this trigger generates all values on the object that are not set (except for `name`) and sets the ACL on the record to `Master key only`. This allows for easily creating a new `access_grant` by simply specifying a `name`, and allowing the trigger to do the rest.
+***
+### `user_prefs`
+**Discussion**
+
+For **new** objects, this sets some default values that should be populated in a user's preferences, and sets the ACL on the record to `Master key only`.
+***
+### `account_linked`
+**Discussion**
+
+For **new** objects, this trigger sets the ACL on the record to `Master key only`.
+***
+### `enterprise_prefs`
+**Discussion**
+
+For **new** objects, this trigger sets the ACL on the record to `Master key only`.
+***
+### `event_template`
+**Discussion**
+
+For **new** objects, this trigger sets the ACL on the record to `Master key only`.
+***
+### `task_template`
+**Discussion**
+
+For **new** objects, this trigger sets the ACL on the record to `Master key only`.
+***
+
+## afterSave triggers
+### `account_linked`
+**Discussion**
+
+For **new** objects, this trigger sends a request to ActivityHub's internal Salesforce organization to notify CRM of the newly linked account.
+***
+### `license_purchase`
+**Discussion**
+
+For **new** objects, this trigger sends a request to ActivityHub's internal Salesforce organization to notify CRM of the newly purchased license for a given user.
+***
+
+## afterDelete triggers
+### `_User`
+**Discussion**
+
+This trigger essentially does some cleanup after a user is erased from our database. Since ActivityHub doesn't allow customers to delete their profiles, this will normally be fired when someone internally removes a user. The trigger will automatically remove relevant `user_prefs` and `account_linked` objects (therefore resulting in a cascade of triggers, wiping out the user's metadata).
+***
+### `account_linked`
+**Discussion**
+
+This trigger will automatically delete all `event` and `task` objects (and their associates) related to this account. It will then send a request to ActivityHub's internal Salesforce organization to notify CRM of the removal. In addition, if this was a Salesforce account, the user's `preferences` will be stripped of all Salesforce-specific data.
 ***

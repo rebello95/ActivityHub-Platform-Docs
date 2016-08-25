@@ -187,6 +187,7 @@ There are some important notes on the functionality of this function that are wo
 - Multi-day events are not explicitly supported and may cause errors
 - If you are attempting to add a shared calendar's event to another account, the request will be rejected since this is not allowed
 - Requests to modify existing events where access is set to `SharedLocked` or `ReadOnly` will be ignored silently (which, by nature, automatically includes events with `SalesforceData.IsInvitation = true`)
+- You may modify events on shared calendars that you have access to (non-Salesforce only), but cannot create events on those calendars
 - Attempting to write to Salesforce fields that are disabled or do not exist on the user's layout (as specified in the `get_user_info` endpoint) will result in those fields being ignored
 - When writing to Salesforce custom fields, any combination of valid fields may be specified (those left out in the request will not be updated) 
 
@@ -266,7 +267,7 @@ Yes
 ### Deleting an event
 **Discussion**
 
-Continuing with ActivityHub's design of linking "matched" events together, calling this endpoint to delete an event will delete that event from **all** accounts in which it is stored. For example, if an event with ID `m-zEuLsGqErv` is referenced in Google and Salesforce, calling this endpoint will delete the event from both places. If you want to remove the event from only *one* account, use `upsert_event` (above) instead, and specify the accounts there.
+Continuing with ActivityHub's design of linking "matched" events together, calling this endpoint to delete an event will delete that event from **all** accounts in which it is stored. For example, if an event with ID `m-zEuLsGqErv` is referenced in Google and Salesforce, calling this endpoint will delete the event from both places. If you want to remove the event from only *one* account, use `upsert_event` (above) instead, and specify the accounts there. This endpoint also supports deleting events on a shared calendar (non-Salesforce), as long as you have permission to do so.
 
 **File**: `/src/manage_events.js`
 
