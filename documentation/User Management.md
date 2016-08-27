@@ -17,6 +17,7 @@
 - [Create/update an event or task template](#createupdate-an-event-or-task-template)
 - [Delete event/task templates for a user](#delete-eventtask-templates-for-a-user)
 - [Update a user's preferences](#update-a-users-preferences)
+- [Get available shared calendars for an account](#get-available-shared-calendars-for-an-account)
 
 #### Jobs
 - [Downgrade expired users](#downgrade-expired-users)
@@ -47,6 +48,7 @@ The ActivityHub platform is designed to allow for *dynamically adding support fo
 - `EventsSupported` should only be `false` for odd accounts like GoToMeeting. We recommend **not** supporting dynamic adding of accounts where this value is set to `false`, as there is little likelihood that their uses will be universal
 - `SandboxSupported` will be `true` for accounts like Salesforce that support production and sandbox instances (and different login pages for both)
 - `InviteesSupported` will be `false` for accounts that don't support fetching/posting invitees and contacts. Microsoft Live would be an example of this
+- `SharedCalendarsSupported` will be `false` for accounts that don't support viewing other peoples' shared calendars (Office 365, for example)
 - `AllowsSignup` is `true` for accounts that allow for sign-ups. For example, a user is allowed to sign up with a Google account, but not with a GoToMeeting account
 - `OnePerUser` indicates if the user is limited to adding 1 of these accounts to their profile. As an example, users can only have 1 Salesforce account associated with their profile (they can, however, sign out and sign in with the account in order to create a new profile)
 
@@ -84,6 +86,7 @@ Yes
       },
       "EventsSupported": true,
       "SandboxSupported": false,
+      "SharedCalendarsSupported": false
       "Name": "Office 365"
     }
   ]
@@ -906,7 +909,6 @@ This endpoint takes preference items and updates them in the user object. If the
 		- `ShowInvitations` (**optional**) - boolean value indicating if salesforce invitations should be shown
 		- `GlyphsOn` (**optional**) - boolean, shows 'related to' object glyph on events/tasks
 
-
 **Supports internal override?**
 No
 
@@ -933,7 +935,42 @@ No
 }
 ```
 ***
+### Get available shared calendars for an account
+**Discussion**
 
+Returns information on shared calendars that a user can link to a given account. Note that not all accounts support this, use the `SharedCalendarsSupported` flag on accounts to determine if it's available.
+
+**File**: `/src/manage_users.js`
+
+**Function**: `get_available_shared_cals`
+
+**Parameters**
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `account_id` (**required**) - ID of the account_linked to get shared calendars for
+
+**Supports internal override?**
+No
+
+**Example request body**
+```
+{
+  "token": "XXXXX",
+  "account_id": "sk3bdk9snE"
+}
+```
+
+**Example response**
+```
+{
+  "ID": "GehsQnsBrP",
+  "SharedCalendars": {
+    "Color": "#cd74e6",
+    "Display": "John Doe",
+    "ID": "john@doe.com"
+  }
+}
+```
+***
 ## Jobs
 ### Downgrade expired users
 **Discussion**

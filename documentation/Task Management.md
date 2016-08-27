@@ -150,8 +150,7 @@ Yes
 **Example response**
 ```
 {
-    "Tasks": 1,
-    "Invitees": 2
+    "TaskID": "hdn37dhH91"
 }
 ```
 ***

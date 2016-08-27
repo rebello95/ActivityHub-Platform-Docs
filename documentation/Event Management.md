@@ -259,8 +259,7 @@ Yes
 **Example response**
 ```
 {
-    "Events": 2,
-    "Invitees": 2
+    "EventID": "hnd4g4jnx8"
 }
 ```
 ***
