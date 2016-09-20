@@ -1,15 +1,27 @@
-# Documentation
-### Notes before you get started
-- Most functions documented are accessible as an authenticated ActivityHub user by passing in a `token` value in the body of your REST request
-- Many of the functions allow internal overrides (so the system can easily call itself). These functions will have this feature denoted in their documentation. To internally override a function, the following values must be passed in the body. *Do not pass in both a `token` and `key` - `key` will take precedence, and `token` will be ignored*:
-	- `key`: internal key to authorize the request as internal
-	- `user_id`: the ID of the user that this function is being called on behalf of
-- **Unless otherwise specified, all API calls are `POST` requests**
-- You may want to look at the [error handling](#universal-error-handling) documentation near the bottom of this ReadMe file. *Every* API endpoint supports one universalized error format, and it will be very helpful for you to know what it looks like
+## Get started
+Welcome to the ActivityHub Platform! Below is a quick introduction of how to connect to and use the API.
+
+##### 1. Obtain credentials
+In order to use ActivityHub as a developer, you'll need to [obtain a keyset](../master/documentation/Authentication.md#obtain-client-keys) for your application.
+
+##### 2. Make your first API call
+As an example API call, try hitting the [`get_available_acct_types`](../master/documentation/User%20Management.md#get-available-account-types) endpoint. You'll need to use the following information for **all** requests made to our servers:
+
+**URL:** `https://api.activityhub.io/parse/functions/<ENDPOINT>`
+
+**HTTP verb:** `POST` 
+*\*Unless otherwise specified, all ActivityHub API calls should be `POST` requests.*
+
+**Headers:**
+`X-Parse-Application-Id`: "ACTIVITYHUB-PLATFORM-API"
+`Content-Type`: "application/json"
+
+##### 3. Make authenticated API calls
+Now that you know how to make an API call to ActivityHub, the next step is to authenticate a user and start making real requests! You've already completed the first few steps, and the [authentication documentation](../master/documentation/Authentication.md#register-and-login) is a great place to go from here.
 
 ***
-### Table of contents
-Endpoints are grouped into categories. See this table for links to each ReadMe.
+## Table of contents
+Endpoints are grouped into the following categories:
 
 1. [Authentication](../master/documentation/Authentication.md)
 	- Provides an explanation for how to authenticate your app and your users with the ActivityHub service
@@ -39,22 +51,23 @@ Endpoints are grouped into categories. See this table for links to each ReadMe.
 	- Brief summaries of each table in our database
 
 ***
-### Universal error handling
+## Response error handling
 ##### Overview
 When ActivityHub returns an error, the format will always include the following information:
 - `StatusCode` - number indicating the type of error (possible values listed below)
-- `InternalError` - boolean, `true` if this was an error within ActivityHub Cloud. An example an a non-internal error would be Google returning a failure message that ActivityHub can't auto-resolve
+- `InternalError` - boolean, `true` if this was an error within ActivityHub. An example an a non-internal error would be Google returning a failure message that ActivityHub can't auto-resolve
 - `ErrorDesc` - string providing basic information on the problem
 - `ErrorDetails` - string providing more technical information or debug details on the error. This value may be `null`
 
 ##### Error codes
-- `400` - Malformed request to ActivityHub Cloud
-- `403` - Unauthorized to access this endpoint within ActivityHub Cloud
+- `400` - Malformed request to ActivityHub
+- `401` - Invalid ActivityHub access token
+- `403` - Unauthorized to access this endpoint within ActivityHub
 - `404` - Resource not found (this can include failing to find data due to insufficient permissions)
 - `500` - General internal error
 - `502` - General external error (i.e., an error response from Google)
 
-##### Example response
+##### Example error response
 ```
 {
   "StatusCode": 500,
@@ -63,4 +76,3 @@ When ActivityHub returns an error, the format will always include the following 
   "ErrorDetails": "If non-null, this will contain technical details."
 }
 ```
-***

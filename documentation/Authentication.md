@@ -35,7 +35,7 @@ Once obtained, your key set will include:
 ## Register and login
 Once you have your client keys, you're ready to make a request to log a user in to ActivityHub! To do this, you'll construct a `GET` request that the user will **load in their browser, eventually redirecting to an OAuth login/consent screen**.
 
-**Before making this request**, you'll want to call the [`get_available_acct_types`](../master/documentation/User%20Management.md) endpoint to get a list of services that the user can log in with. The ID selected from the list will serve as the `type` parameter below.
+**Before making this request**, you'll want to call the [`get_available_acct_types`](../documentation/User%20Management.md#get-available-account-types) endpoint to get a list of services that the user can log in with. The ID selected from the list will serve as the `type` parameter below.
 
 ***This endpoint can be used for both signing a user up and logging a user in. Once the user authenticates with an identity provider, ActivityHub will search our database for a matching user profile. If none is found, one is created automatically for the user.***
 
@@ -106,7 +106,7 @@ https://auth.activityhub.io/authorize?type=AAAAA&client_id=BBBBB&client_secret=C
 Once you've constructed this URL, simply request it in a browser/web view for your user. ActivityHub will then validate your request and send them to the appropriate login page. Upon a successful or failed authentication, your user will be redirected to the `redirect_uri`, sending the same parameters as the [login responses mentioned above](#register-and-login). **Be sure to use the new access token that is provided with the success callback for future requests.**
 
 ***
-## Endpoints 
+## Internal endpoints 
 
 ### Request permission to sign a user in
 **Discussion**
@@ -176,7 +176,6 @@ Once you have the code, call this function using that value as well as the `Toke
 *Upon receiving a successful return from this function, you'll be able to make calls to all other ActivityHub endpoints using the newly provided token for this user.* Here are some more details on the values returned:
 - If a new user was created, `Response.IsNew` will be `true`
 - `Response.AccessToken` can be used to make authenticated requests on behalf of this user
-- The `Profile` response is identical to what would be returned in the `get_user_info` endpoint
 - The `Response.RedirectURL` is the URL that the user should be redirected to in order for the original client to receive a callback
 
 **File**: `/src/manage_users.js`
@@ -203,13 +202,11 @@ Yes
 **Example response**
 ```
 {
-  "Profile": {
-    //Will be exactly the same as what's returned by get_user_info
-  },
   "Response": {
     "IsNew": false,
     "AccessToken": "XXXXX",
-    "RedirectURL": "localhost://callback"
+    "RedirectURL": "localhost://callback",
+    "Username": "test-028"
   }
 }
 ```

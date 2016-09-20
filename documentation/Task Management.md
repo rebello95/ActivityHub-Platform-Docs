@@ -91,7 +91,8 @@ Yes
 ActivityHub allows for easy creation and updating of tasks within Salesforce and our database through this endpoint. Here are some additional notes:
 - Excluding the `ID` parameter within `task` in your request will result in the creation of a new task
 - The `Invitees` value within `task` is optional. If it is not included, no invitees will be changed on the task. If it is included, however, all invitees must be specified
-- Failing to include an invitee's `ServiceID` parameter will result in failed requests to Salesforce when updating invitees
+- Failing to include an invitee's `ServiceID` parameter will result in failed requests to Salesforce when updating invitees 
+- This endpoint returns a follow up suggestion if keywords are used. If not, the FollowUp value will be null. 
 
 **File**: `/src/manage_tasks.js`
 
@@ -110,6 +111,7 @@ ActivityHub allows for easy creation and updating of tasks within Salesforce and
 	- `SalesforceData` (**optional**) - to update additional Salesforce data, use this map of values {`string` => `value`}. This may include the following, none of which are required:
 		- `CustomFields` (**optional**) - map of any custom fields you'd like to update on this event. Any specified fields that are recognized by the system will be updated. They should be formatted in a map of {`Salesforce API name` => `value`}
 		- `RelatedTo` (**optional**) - string ID of a non-who ID within the event's Salesforce organization
+		- `AssignedTo` (**optional**) - string ID of a Salesforce user (cannot be listed as an invitee), to assign the task to. ***If filled in as an ID that is not the requester's, `null` will be returned as the task ID***
 	- `Invitees` (**optional**) - array, each with the following information:
 		- `Email` (**required**) - email address of the invitee
 		- `Name` (**optional**) - name of the invitee
@@ -129,19 +131,20 @@ Yes
     "Notes": "My test notes",
     "ID": "Cvt8yABrVL",
     "Invitees": [
-        {
-          "Email": "test@abc.com",
-          "Name": "John Doe",
-          "ServiceID": "003o000000u9qwg"
-        }
+      {
+        "Email": "test@abc.com",
+        "Name": "John Doe",
+        "ServiceID": "003o000000u9qwg"
+      }
     ],
     "InAccount": "Yxjcr6K0r6",
     "Subject": "Test Task",
-        "SalesforceData": {
+    "SalesforceData": {
       "CustomFields": {
         "Test_2__c": "This is my custom text"
       },
-      "RelatedTo": "006o000000IsIZFAA3"
+      "RelatedTo": "006o000000IsIZFAA3",
+      "AssignedTo": "005o000000IrAZFAA3"
     }
   }
 }
@@ -150,7 +153,13 @@ Yes
 **Example response**
 ```
 {
-    "TaskID": "hdn37dhH91"
+  "TaskID": "ak3jdx9HB3",
+  "FollowUp": {
+    "Date": "2016-09-06T00:00:00Z",
+    "Notes": "This is a follow-up task regarding the conversation from 9/2/16.",
+    "Subject": "Follow-Up: Meeting with Bob",
+    "Question": "Would you like to create a follow-up event for Friday (9/6)?"
+  }
 }
 ```
 ***

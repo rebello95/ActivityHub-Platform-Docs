@@ -189,7 +189,8 @@ There are some important notes on the functionality of this function that are wo
 - Requests to modify existing events where access is set to `SharedLocked` or `ReadOnly` will be ignored silently (which, by nature, automatically includes events with `SalesforceData.IsInvitation = true`)
 - You may modify events on shared calendars that you have access to (non-Salesforce only), but cannot create events on those calendars
 - Attempting to write to Salesforce fields that are disabled or do not exist on the user's layout (as specified in the `get_user_info` endpoint) will result in those fields being ignored
-- When writing to Salesforce custom fields, any combination of valid fields may be specified (those left out in the request will not be updated) 
+- When writing to Salesforce custom fields, any combination of valid fields may be specified (those left out in the request will not be updated)  
+- This endpoint returns a follow up suggestion if keywords are used. If not, the FollowUp value will be null. 
 
 **File**: `/src/manage_events.js`
 
@@ -211,6 +212,9 @@ There are some important notes on the functionality of this function that are wo
 	- `SalesforceData` (**optional**) - if one of the accounts this event is in belongs to Salesforce, you may update Salesforce-specific data within this map of values {`string` => `value`}. This may include the following, none of which are required:
 		- `CustomFields` (**optional**) - map of any custom fields you'd like to update on this event. Any specified fields that are recognized by the system will be updated. They should be formatted in a map of {`Salesforce API name` => `value`}
 		- `RelatedTo` (**optional**) - string ID of a non-who ID within the event's Salesforce organization
+		- `AssignedTo` (**optional**) - string ID of a Salesforce user (cannot be listed as an invitee), to assign the event to
+			- If this is filled in as an ID that is not the requester's, but the requester has the new assignee's calendar added as a shared calendar, an ID will still be returned
+			- If this is filled in as an ID that is not the requester's and the requester does **not** have the new assignee's calendar showing, `null` will be returned as the ID if the event is not in any other accounts. (In this scenario, the client should handle removing Salesforce data from the event locally)
 	- `Invitees` (**optional**) - map of invitees {`account ID` => `array`}. If included, this should have 1 array of invitees at the key of every account ID specified in the `InAccounts` parameter, each with the following information:
 		- `Email` (**required**) - email address of the invitee
 		- `Name` (**optional**) - name of the invitee
@@ -250,7 +254,8 @@ Yes
       "CustomFields": {
         "Test_2__c": "My text here"
       },
-      "RelatedTo": "006o000000IsIZFAA3"
+      "RelatedTo": "006o000000IsIZFAA3",
+      "AssignedTo": "005o000000raXZFAA3"
     }
   }
 }
@@ -259,7 +264,13 @@ Yes
 **Example response**
 ```
 {
-    "EventID": "hnd4g4jnx8"
+  "EventID": "hnd4g4jnx8",
+  "FollowUp": {
+    "Date": "2016-09-06T00:00:00Z",
+    "Notes": "This is a follow-up event regarding the conversation from 9/2/16.",
+    "Subject": "Follow-Up: Meeting with Bob",
+    "Question": "Would you like to create a follow-up event for Friday (9/6)?"
+  }
 }
 ```
 ***

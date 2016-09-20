@@ -18,9 +18,6 @@ Notes:
 
 ***
 ## Table of contents
-#### Jobs
-- [Sync all users' external data](#sync-all-users-external-data)
-
 #### beforeSave triggers
 - [event](#event)
 - [event_match](#event_match)
@@ -39,18 +36,6 @@ Notes:
 - [deleteEventsForAccount()](#deleteeventsforaccount)
 - [deleteTasksForAccount()](#deletetasksforaccount)
 
-***
-## Jobs
-### Sync all users' external data
-**Discussion**
-
-This job will essentially pull in a new set of data for every account associated with every user in our database. **This will result in a full refresh of all users' event and task data from their respective external services.** They are pulled back between first day of last month and the last day of next month. (For example, if today is March 5, the timeframe of February 1 - April 30 will be used.) Events and tasks outside of this timeframe will not be synced, and any within our database outside of this timeframe will be removed.
-
-In addition to pulling in new data, this job also operates ActivityHub's **state machine**. Currently, invitees are **not** copied across services. See the top of this document for how the state machine works.
-
-**File**: `/src/syncing.js`
-
-**Job**: `sync_external_data`
 ***
 ## beforeSave triggers
 ### `event`

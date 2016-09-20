@@ -2,10 +2,11 @@
 
 ## Table of contents
 #### Endpoints
-- [Convert address to lat/lon](../documentation/Utilities.md#convert-address-to-latlon)
-- [Get Google address autocompletions](../documentation/Utilities.md#get-google-address-autocompletions)
-- [Shorten a URL](../documentation/Utilities.md#shorten-a-url)
-- [Get a required client version](../documentation/Utilities.md#get-a-required-client-version)
+- [Convert address to lat/lon](#convert-address-to-latlon)
+- [Get Google address autocompletions](#get-google-address-autocompletions)
+- [Shorten a URL](#shorten-a-url)
+- [Post an analytics event](#post-an-analytics-event)
+- [Get a required client version](#get-a-required-client-version)
 
 #### Internal functions
 - [searchAllContacts](../documentation/Utilities.md#searchallcontacts)
@@ -117,6 +118,93 @@ Yes
 {
   "LongURL": "https://www.google.com/",
   "ShortURL": "https://goo.gl/Njku"
+}
+```
+***
+### Post an analytics event
+**Discussion**
+
+*For internal use only.* Posts information to our database for analytics purposes.
+
+**File**: `/src/utilities`
+
+**Function**: `record_action`
+
+**Parameters**
+- `client_id` (**required**) - the client ID of the app this request is being made on behalf of
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `action_id` (**required**) - the ID of the action from the `analytics_type` table
+- `device` (**optional**) - string, example: iPhone, iPad, Android Phone, Android Tablet, Web
+- `version` (**optional**) -optional string, example: 8.5.2
+- `beta` (**optional**) - optional boolean
+- `location` (**optional**) - map with the following values:
+	- `lat` (**optional**) - latitude of the user's location
+	- `lng` (**optional**) - longitude of the user's location
+- `details` (**optional**) - optional string with extra info
+
+**Supports internal override?** 
+Yes
+
+**Example request body**
+```
+{
+	"client_id": "XXXXX",
+	"token": "YYYYY",
+	"action_id": "sdh3kH0193",
+	"device": "iPhone",
+	"version": "1.2.3",
+	"beta": true,
+	"location": {
+		"lat": 123.456,
+		"lng": 123.456
+	},
+	"details": "Some extra info here"
+}
+```
+
+**Example response**
+```
+{
+  "Saved": true
+}
+```
+***
+### Register Device
+**Discussion**
+
+This is an endpoint to create or update a record in the Installation table
+
+**File**: `/src/utilities`
+
+**Function**: `register_device`
+
+**Parameters**
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `bundle_id` (**required**) - String, appIdentifier
+- `version` (**required**) -String, appVersion
+- `device_token` (**required**) - String, deviceToken
+- `os` (**required**) - String, deviceType (ios/android)
+- `time_zone` (**required**) - String, timeZone
+
+**Supports internal override?** 
+No
+
+**Example request body**
+```
+{
+  "token": "XXXXX",
+  "bundle_id": "com.acme.appname",
+  "version": "1.0",
+  "device_token": "XXXXX",
+  "os": "ios",
+  "time_zone": "America/Los_Angeles"
+}
+```
+
+**Example response**
+```
+{
+  "InstallationID": "vSp2sZXWKF"
 }
 ```
 ***

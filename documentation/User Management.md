@@ -19,9 +19,6 @@
 - [Update a user's preferences](#update-a-users-preferences)
 - [Get available shared calendars for an account](#get-available-shared-calendars-for-an-account)
 
-#### Jobs
-- [Downgrade expired users](#downgrade-expired-users)
-
 #### beforeSave triggers
 - [link_account_session](#link_account_session)
 - [access_grant](#access_grant)
@@ -166,6 +163,7 @@ Yes
 **Discussion**
 
 Want to know all the details on a user's profile, including their license information and linked accounts? Call this function.
+- `License.Expires` will be `null` if no expiration date is set
 
 **File**: `/src/manage_users.js`
 
@@ -970,18 +968,6 @@ No
   }
 }
 ```
-***
-## Jobs
-### Downgrade expired users
-**Discussion**
-
-This job checks every existing user in our database to see if they have an expired subscription. Upon identifying these users, it changes their associated license and removes their expiration date.
-
-**File**: `/src/manage_users.js`
-
-**Job**: `downgrade_users`
-***
-
 ## beforeSave triggers
 ### `link_account_session`
 **Discussion**

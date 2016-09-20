@@ -3,14 +3,21 @@
 ## Table of contents
 #### Endpoints
 - [Get recently viewed](#get-recently-viewed)
-- [Getting selected field values for a record](#get-selected-field-values-for-a-salesforce-record)
+- [Getting selected field values for a Salesforce record](#get-selected-field-values-for-a-salesforce-record)
+- [Getting Salesforce records by email](#Getting-salesforce-records-by-email)
 - [Searching Salesforce records](#searching-salesforce-records)
+- [Searching Salesforce Whos](#searching-salesforce-whos)
 - [Getting info on Salesforce records](#getting-info-on-salesforce-records)
 - [Getting contacts related to a Salesforce account object](#getting-contacts-related-to-a-Salesforce-account-object)
 - [Getting Salesforce invitee details](#getting-salesforce-invitee-details)
 - [Getting opportunity suggestions from contacts](#getting-opportunity-suggestions-from-contacts)
+- [Getting Opportunity Contact Roles](#getting-opportunity-contact-roles)
+- [Handle Opportunity Contact Role](#handle-opportunity-contact-role)
+- [Delete Opportunity Contact Role](#delete-opportunity-contact-role)
 - [Getting Salesforce SObjects](#getting-salesforce-sobjects)
 - [Getting all fields of a Salesforce SObject](#getting-all-fields-of-a-salesforce-sobject)
+- [Getting all phone fields of a Salesforce Contact](#getting-all-phone-fields-of-a-salesforce-contact)
+- [Getting addresses of a Salesforce Account](#getting-addresses-of-a-salesforce-account)
 - [Updating a user's selected objects/fields](#updating-a-users-selected-objectsfields)
 - [Updating a user's primary/secondary fields](#updating-a-users-primarysecondary-fields)
 - [Get all event/task record types](#get-all-eventtask-record-types)
@@ -130,6 +137,53 @@ Yes
 }
 ```
 ***
+### Get Salesforce records by email
+**Discussion**
+
+This endpoint takes an array of emails and searches the supplied Salesforce account for Contacts, Users and Leads in that order then returns up to one record for each email.
+
+**File**: `/src/salesforce_objects.js`
+
+**Function**: `get_sf_records_by_email`
+
+**Parameters**
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `account_id` (**required**) - ID of a user's Salesforce `account_linked` object
+- `emails` (**required**) - Array of emails to search for
+- `ignore_retry` (**optional**) - boolean used internally to force the function not to try refreshing an OAuth token
+
+**Supports internal override?** 
+No
+
+**Example request body**
+```
+{
+  "token": "XXXXX",
+  "account_id": "czar4zFSPe",
+  "emails": [
+    "jack@company.com",
+    "susan@company.com"
+  ]
+}
+```
+
+**Example response**
+```
+{
+  "result": {
+    "Results": [
+      {
+        "Email": "jack@company.com",
+        "ID": "00531000003MUhoAAC",
+        "PrimaryText": "Jack Herman",
+        "SFAPIName": "User",
+        "SecondaryText": "(888)888-8888"
+      }
+    ]
+  }
+}
+```
+***
 ### Searching Salesforce records
 **Discussion**
 
@@ -153,6 +207,47 @@ Yes
 ```
 {
   "sf_object": "Contact",
+  "search_term": "ash",
+  "token": "XXXXX",
+  "account_id": "WMajQtTiYr"
+}
+```
+
+**Example response**
+```
+{
+  "Results": [
+    {
+      "ID": "003o000000u8W9kAAE",
+      "Email": "ashley@test.io",
+      "PrimaryText": "Ashley James",
+      "SecondaryText": "5/20/16 11:32pm"
+    }
+  ]
+}
+```
+***
+### Searching Salesforce Whos
+**Discussion**
+
+Takes a search term and returns any applicable Contacts, Users or Leads within the Salesforce account.
+
+**File**: `/src/salesforce_objects.js`
+
+**Function**: `search_sf_whos`
+
+**Parameters**
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `account_id` (**required**) - ID of a user's Salesforce `account_linked` object
+- `search_term` (**required**) - the string being searched for (at least 1 character)
+- `ignore_retry` (**optional**) - boolean used internally to force the function not to try refreshing an OAuth token
+
+**Supports internal override?** 
+Yes
+
+**Example request body**
+```
+{
   "search_term": "ash",
   "token": "XXXXX",
   "account_id": "WMajQtTiYr"
@@ -304,7 +399,7 @@ Yes
 **Example response**
 ```
 {
-	"Updated": 1
+  "Updated": 1
 }
 ```
 ***
@@ -352,6 +447,137 @@ Yes
       "Name": "Synergetic Tech, Inc."
     }
   ]
+}
+```
+***
+### Getting Opportunity Contact Roles
+**Discussion**
+
+This endpoint takes a Salesforce Opportunity ID and a list of Salesforce contact IDs and returns the opportunity contact roles within Salesforce for each of these contacts if they have a role within this Opportunity.
+
+**File**: `/src/salesforce_objects.js`
+
+**Function**: `get_opportunity_contact_roles`
+
+**Parameters**
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `account_id` (**required**) - ID of a user's Salesforce `account_linked` object
+- `opportunity_id` (**required**) - ID of the Salesforce Opportunity
+- `sf_contact_ids` (**required**) - array of IDs of contacts within a Salesforce account
+- `ignore_retry` (**optional**) - boolean used internally to force the function not to try refreshing an OAuth token
+
+**Supports internal override?** 
+No
+
+**Example request body**
+```
+{
+  "token": "XXXXX",
+  "account_id": "WMajQtriYF",
+  "account_id": "00636000005RWB5FAG",
+  "sf_contact_ids": [
+    "003o000000BTxwF",
+    "003o000000BTxwB",
+    "003o000000BTxwA"
+  ]
+}
+```
+
+**Example response**
+```
+{
+  "ContactRoles": [
+    {
+      "ID": "00E3600000c8462FAB",
+      "Name": "Head",
+      "Role": "Adviser",
+      "ContactID": "0033600000c8462FAB",
+      "ContactName": "Jack McKman"
+    },
+    {
+      "ID": "00E3600000D8164FAB",
+      "Name": "Sub",
+      "Role": "Sales",
+      "ContactID": "0033600000D8164FAB",
+      "ContactName": "Michael Hamm"
+    }
+  ]
+}
+```
+***
+### Handle Opportunity Contact Role
+**Discussion**
+
+This endpoint takes a Contact Role and either a Contact Role ID or a Salesforce contact ID and Salesforce Opportunity ID and returns the opportunity contact role ID that was either updated or created.
+
+**File**: `/src/salesforce_objects.js`
+
+**Function**: `upsert_sf_opportunity_contact_role`
+
+**Parameters**
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `account_id` (**required**) - ID of a user's Salesforce `account_linked` object
+- `is_update` (**required**) - Boolean value of the type of call
+- `opportunity_contact_role_id` (**required if updating**) - ID of the Opportunity Contact Role selected
+- `opportunity_id` (**required**) - ID of the Salesforce Opportunity
+- `contact_id` (**required**) - ID of contact within a Salesforce account
+- `role` (**required**) - String value of the Opportunity Contact Role selected
+- `ignore_retry` (**optional**) - boolean used internally to force the function not to try refreshing an OAuth token
+
+**Supports internal override?** 
+No
+
+**Example request body**
+```
+{
+  "token": "XXXXX",
+  "account_id": "WMajQtriYF",
+  "is_update": "false",
+  "opportunity_id": "0056000005tWB5FAG",
+  "contact_id": "0036000005tWG5FAG",
+  "role": "Advisor"
+}
+```
+
+**Example response**
+```
+{
+  "ID": "00E6000004tWY5FAG"
+}
+```
+***
+### Delete Opportunity Contact Role
+**Discussion**
+
+This endpoint removes an `OpportunityContactRole` object.
+
+**File**: `/src/salesforce_objects.js`
+
+**Function**: `delete_sf_opportunity_contact_role`
+
+**Parameters**
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `account_id` (**required**) - ID of a user's Salesforce `account_linked` object
+- `opportunity_contact_role_id` (**required**) - ID of the Opportunity Contact Role to remove
+- `ignore_retry` (**optional**) - boolean used internally to force the function not to try refreshing an OAuth token
+
+**Supports internal override?** 
+No
+
+**Example request body**
+```
+{
+  "token": "XXXXX",
+  "account_id": "WMajQtriYF",
+  "opportunity_contact_role_id": "00X6000005tWB5FAG",
+  "role": "Advisor"
+}
+```
+
+**Example response**
+```
+{
+  "Deleted": 1
 }
 ```
 ***
@@ -445,6 +671,81 @@ Yes
 }
 ```
 ***
+### Getting all phone fields of a Salesforce Contact
+**Discussion**
+
+This endpoint retrieves all phone fields from a Contact from the specified Salesforce account.
+
+**File**: `/src/salesforce_objects.js`
+
+**Function**: `get_sf_contact_numbers`
+
+**Parameters**
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `account_id` (**required**) - ID of a user's Salesforce
+- `contact_id` (**required**) - ID of the contact to query phone numbers for
+- `ignore_retry` (**optional**) - boolean used internally to force the function not to try refreshing an OAuth token
+
+**Supports internal override?** 
+No
+
+**Example request body**
+```
+{
+  "token": "XXXXX",
+  "account_id": "WMajQtriYF",
+  "contact_id": "0036000001LyRew",
+  "ignore_retry": false
+}
+```
+
+**Example response**
+```
+{
+  "PhoneNumbers": {
+      "Primary": "(212) 555-5555"
+    }
+}
+```
+***
+### Getting addresses of a Salesforce Account
+**Discussion**
+
+This endpoint retrieves address fields from an Account from the specified Salesforce account.
+
+**File**: `/src/salesforce_objects.js`
+
+**Function**: `get_sf_account_addresses`
+
+**Parameters**
+- `token` (**required**) - a valid ActivityHub authentication token for this user
+- `account_id` (**required**) - ID of a user's Salesforce
+- `account_object_id` (**required**) - ID of the account object to query addresses for
+- `ignore_retry` (**optional**) - boolean used internally to force the function not to try refreshing an OAuth token
+
+**Supports internal override?** 
+No
+
+**Example request body**
+```
+{
+  "token": "XXXXX",
+  "account_id": "WMajQtriYF",
+  "account_object_id": "0013200001EzdTU",
+  "ignore_retry": false
+}
+```
+
+**Example response**
+```
+{
+  "Addresses": {
+      "Billing": "1 Infinite Loop Cupertino CA 95014",
+      "Shipping": null
+   }
+}
+```
+***
 ### Updating a user's selected objects/fields
 **Discussion**
 
@@ -458,11 +759,11 @@ This endpoint takes raw Salesforce object names and their selected fields. It th
 - `token` (**required**) - a valid ActivityHub authentication token for this user
 - `account_id` (**required**) - ID of a user's Salesforce linked account
 - `objects` (**required**) - array of maps with the following values:
-	- `api_name` (**required**) - Salesforce object's API name
-	- `fields` (**optional**) - array of maps with the following values:
-		- `SFAPIName` (**required**) - API name of the field
-		- `Name` (**required**) - display name of the field
-		- `SFType` (**required**) - Salesforce type of the field
+  - `api_name` (**required**) - Salesforce object's API name
+  - `fields` (**optional**) - array of maps with the following values:
+	    - `SFAPIName` (**required**) - API name of the field
+	    - `Name` (**required**) - display name of the field
+	    - `SFType` (**required**) - Salesforce type of the field
 
 **Supports internal override?** 
 No
@@ -514,10 +815,10 @@ This endpoint updates the user's selected primary and secondary fields. It acts 
 **Parameters**
 - `token` (**required**) - a valid ActivityHub authentication token for this user
 - `objects` (**required**) - map of maps (each with the following values - or `null`), at the key of the object's API name
-	- `PrimaryAPIName` (**required**) - API name of primary
-	- `PrimaryType` (**required**) - type of primary field
-	- `SecondaryAPIName` (**optional**) - API name of secondary field
-	- `SecondaryType` (**optional**) - type of secondary field - **required if a secondary API name is provided**)
+  - `PrimaryAPIName` (**required**) - API name of primary
+  - `PrimaryType` (**required**) - type of primary field
+  - `SecondaryAPIName` (**optional**) - API name of secondary field
+  - `SecondaryType` (**optional**) - type of secondary field - **required if a secondary API name is provided**)
 
 **Supports internal override?** 
 No
@@ -630,8 +931,8 @@ This endpoint should be used to update a given user's selected record types for 
 - `token` (**required**) - a valid ActivityHub authentication token for this user
 - `account_id` (**required**) - ID of the Salesforce `account_linked` object
 - `selections` (**required**) - map of the following values:
-	- `Event` (**optional**) - string ID of the event's record type. Pass `null` to revert to master. If the master record type ID is specified, it will be changed to `null` automatically
-	- `Task` (**optional**) - string ID of the task's record type. Pass `null` to revert to master. If the master record type ID is specified, it will be changed to `null` automatically
+	  - `Event` (**optional**) - string ID of the event's record type. Pass `null` to revert to master. If the master record type ID is specified, it will be changed to `null` automatically
+	  - `Task` (**optional**) - string ID of the task's record type. Pass `null` to revert to master. If the master record type ID is specified, it will be changed to `null` automatically
 
 **Supports internal override?** 
 No
@@ -666,9 +967,9 @@ No
 
 This endpoint fetches the following information from Salesforce and updates the `account_linked`'s `salesforceManyWho` setting, as well as the `sfLayoutsJSON` value stored in `user_prefs` for this user:
 - Syncs event **and** task layouts for either the user's selected record type's layout, or for the `Master` record type's layout if none is specified
-	- Custom fields
-	- Viable task picklist values
-	- Which fields are hidden from the layout (i.e., `IsAllDay`)
+  - Custom fields
+  - Viable task picklist values
+  - Which fields are hidden from the layout (i.e., `IsAllDay`)
 - Syncs available phone fields for querying on contacts
 - Syncs available roles to assign as opportunity contact roles
 - Syncs whether shared activities (ManyWho) are enabled
@@ -948,8 +1249,8 @@ This function was designed to be given a list of invitees for an event or task, 
 *Before you read further, take a few shots of vodka - then maybe you'll be able to understand why Salesforce designed it like this... Or, more likely, you'll still be just as confused.*
 - When ManyWho is on, everything is uploaded as an `EventRelation`, which marks them as related (except for users, who are always invitees)
 - When ManyWho is off for **events**...
-	- Everything is uploaded as an `EventRelation`, which marks them **all** as an invitee automatically. However, the `WhoId` field is set to the first contact/lead selected by the user so that it's related to something (this is the Salesforce UI's behavior as well). Why a contact or lead, you ask? Well, simply put, Salesforce doesn't allow users to be used in this field. *Why? Take a few more shots of vodka and maybe you can figure it out*
-	- Setting a lead as a `WhoId` in this case renders the activity unable to have a `WhatId`. The reverse is true as well, because symmetry
+  - Everything is uploaded as an `EventRelation`, which marks them **all** as an invitee automatically. However, the `WhoId` field is set to the first contact/lead selected by the user so that it's related to something (this is the Salesforce UI's behavior as well). Why a contact or lead, you ask? Well, simply put, Salesforce doesn't allow users to be used in this field. *Why? Take a few more shots of vodka and maybe you can figure it out*
+  - Setting a lead as a `WhoId` in this case renders the activity unable to have a `WhatId`. The reverse is true as well, because symmetry
 - Invitees are not technically related to events inside of Salesforce, so you can't run reports on them
 - We handle `WhoId`s by essentially converting them to invitees on download and back to `WhoId`s on upload (if necessary). This makes our code much cleaner and has resulted in fewer bugs
 
