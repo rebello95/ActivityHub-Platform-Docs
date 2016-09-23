@@ -20,6 +20,7 @@
 - [Get available shared calendars for an account](#get-available-shared-calendars-for-an-account)
 
 #### beforeSave triggers
+- [_User](#_user)
 - [link_account_session](#link_account_session)
 - [access_grant](#access_grant)
 - [user_prefs](#user_prefs)
@@ -969,6 +970,11 @@ No
 }
 ```
 ## beforeSave triggers
+### `_User`
+**Discussion**
+
+For **new** objects, this trigger ensures that the user has a defined value for their list of devices.
+***
 ### `link_account_session`
 **Discussion**
 

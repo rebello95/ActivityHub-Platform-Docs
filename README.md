@@ -1,10 +1,10 @@
 ## Get started
 Welcome to the ActivityHub Platform! Below is a quick introduction of how to connect to and use the API.
 
-##### 1. Obtain credentials
+### 1. Obtain credentials
 In order to use ActivityHub as a developer, you'll need to [obtain a keyset](../master/documentation/Authentication.md#obtain-client-keys) for your application.
 
-##### 2. Make your first API call
+### 2. Make your first API call
 As an example API call, try hitting the [`get_available_acct_types`](../master/documentation/User%20Management.md#get-available-account-types) endpoint. You'll need to use the following information for **all** requests made to our servers:
 
 **URL:** `https://api.activityhub.io/parse/functions/<ENDPOINT>`
@@ -16,7 +16,7 @@ As an example API call, try hitting the [`get_available_acct_types`](../master/d
 `X-Parse-Application-Id`: "ACTIVITYHUB-PLATFORM-API"
 `Content-Type`: "application/json"
 
-##### 3. Make authenticated API calls
+### 3. Make authenticated API calls
 Now that you know how to make an API call to ActivityHub, the next step is to authenticate a user and start making real requests! You've already completed the first few steps, and the [authentication documentation](../master/documentation/Authentication.md#register-and-login) is a great place to go from here.
 
 ***
@@ -52,14 +52,14 @@ Endpoints are grouped into the following categories:
 
 ***
 ## Response error handling
-##### Overview
+### Overview
 When ActivityHub returns an error, the format will always include the following information:
 - `StatusCode` - number indicating the type of error (possible values listed below)
 - `InternalError` - boolean, `true` if this was an error within ActivityHub. An example an a non-internal error would be Google returning a failure message that ActivityHub can't auto-resolve
 - `ErrorDesc` - string providing basic information on the problem
 - `ErrorDetails` - string providing more technical information or debug details on the error. This value may be `null`
 
-##### Error codes
+### Error codes
 - `400` - Malformed request to ActivityHub
 - `401` - Invalid ActivityHub access token
 - `403` - Unauthorized to access this endpoint within ActivityHub
@@ -67,7 +67,7 @@ When ActivityHub returns an error, the format will always include the following 
 - `500` - General internal error
 - `502` - General external error (i.e., an error response from Google)
 
-##### Example error response
+### Example error response
 ```
 {
   "StatusCode": 500,
