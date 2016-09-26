@@ -186,7 +186,7 @@ Yes
 **Example response**
 ```
 {
-  "LinkedAccounts": //IDENTICAL TO `Accounts` IN THE `get_user_accounts` call
+  "LinkedAccounts": "<IDENTICAL TO `Accounts` IN THE `get_user_accounts` call>",
   "License": {
     "Features": [
       {
@@ -236,6 +236,7 @@ Yes
     "SalesforceOnly": {
       "AutoFindInvitees": false,
       "GlyphsOn": false,
+      "UseSubjectPicklist": false,
       "LayoutData": {
         "Contact": {
           "PhoneFields": [
@@ -272,7 +273,11 @@ Yes
             }
           ],
           "LocationExists": true,
-          "PrivateExists": false
+          "PrivateExists": false,
+          "SubjectPicklistValues": [
+            "Call",
+            "Meeting"
+          ]
         },
         "OpportunityContactRole": {
           "RoleValues": [
@@ -296,6 +301,10 @@ Yes
               "SFAPIName": "Picklist_Test__c",
               "Type": "picklist"
             }
+          ],
+          "SubjectPicklistValues": [
+            "Call",
+            "Meeting"
           ],
           "PriorityValues": [
             "High",
@@ -907,6 +916,7 @@ This endpoint takes preference items and updates them in the user object. If the
 		- `AutoFindInvitees` (**optional**) - boolean value indicating if auto find invitees should trigger
 		- `ShowInvitations` (**optional**) - boolean value indicating if salesforce invitations should be shown
 		- `GlyphsOn` (**optional**) - boolean, shows 'related to' object glyph on events/tasks
+		- `UseSubjectPicklist` (**optional**) - boolean, whether the user prefers to use the Salesforce subject picklist instead of plaintext for subject fields
 
 **Supports internal override?**
 No
@@ -921,7 +931,8 @@ No
     "SalesforceOnly": {
       "AutoFindInvitees": false,
       "ShowInvitations": false,
-      "GlyphsOn": false
+      "GlyphsOn": false,
+      "UseSubjectPicklist": false
     }
   }
 }

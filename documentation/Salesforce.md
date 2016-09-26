@@ -1170,7 +1170,8 @@ A convenience function for getting the values (**or defaults, if any**) for the 
     "LocationExists": true,
     "AllDayExists": true,
     "PrivateExists": true,
-    "LayoutCustomFields": []
+    "LayoutCustomFields": [],
+    "SubjectPicklistValues": []
   },
   "Task": {
     "StatusValues": [
@@ -1185,7 +1186,8 @@ A convenience function for getting the values (**or defaults, if any**) for the 
       "Normal",
       "High"
     ],
-    "LayoutCustomFields": []
+    "LayoutCustomFields": [],
+    "SubjectPicklistValues": []
   },
   "OpportunityContactRole": {
     "RoleValues": []
