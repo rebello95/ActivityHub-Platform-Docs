@@ -207,6 +207,7 @@ Yes
   "Details": {
     "JobTitle": "",
     "HasBetaAccess": false,
+    "IsDeveloper": true,
     "Username": "john.doe-287",
     "ID": "moIPr2s21s",
     "Phone": "",

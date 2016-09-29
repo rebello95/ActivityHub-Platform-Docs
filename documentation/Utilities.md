@@ -143,7 +143,7 @@ Yes
 - `details` (**optional**) - optional string with extra info
 
 **Supports internal override?** 
-Yes
+No
 
 **Example request body**
 ```

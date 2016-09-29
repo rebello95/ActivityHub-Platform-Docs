@@ -132,7 +132,7 @@ See documentation on the `use_external_account` endpoint for what to do after ca
 - `redirect_uri` (**required**) - URL of the registered app to redirect to after a request is made
 - `token` (**optional**) - a valid ActivityHub authentication token for a user, **needed if adding the account to an existing user**
 - `account_type_id` (**required**) - the account type (a value from the `get_available_acct_types` endpoint) that the user will be logging in with
-- `sf_use_sandbox` (**optional**) - for Salesforce accounts, passing `true` for this value will have the user sign in to a Salesforce sandbox instead of production instance. Defaults to `false`
+- `sandbox` (**optional**) - for Salesforce accounts, passing `true` for this value will have the user sign in to a Salesforce sandbox instead of production instance. Defaults to `false`
 
 **Supports internal override?**
 Yes
@@ -145,7 +145,7 @@ Yes
   "client_id": "BBBBB",
   "client_secret": "CCCCC",
   "redirect_uri": "localhost://callback",
-  "sf_use_sandbox": false,
+  "sandbox": false,
   "token": "DDDDD"
 }
 ```

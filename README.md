@@ -7,13 +7,16 @@ In order to use ActivityHub as a developer, you'll need to [obtain a keyset](../
 ### 2. Make your first API call
 As an example API call, try hitting the [`get_available_acct_types`](../master/documentation/User%20Management.md#get-available-account-types) endpoint. You'll need to use the following information for **all** requests made to our servers:
 
-**URL:** `https://api.activityhub.io/parse/functions/<ENDPOINT>`
+**URL:** `https://api.activityhub.io/parse/functions/<FUNCTION>`
 
 **HTTP verb:** `POST` 
-*\*Unless otherwise specified, all ActivityHub API calls should be `POST` requests.*
+
+*Unless otherwise specified, all ActivityHub API calls should be `POST` requests.*
 
 **Headers:**
+
 `X-Parse-Application-Id`: "ACTIVITYHUB-PLATFORM-API"
+
 `Content-Type`: "application/json"
 
 ### 3. Make authenticated API calls
@@ -45,9 +48,11 @@ Endpoints are grouped into the following categories:
 	- Getting and responding to surveys
 11. [Utilities](../master/documentation/Utilities.md)
 	- Various helper functions pertaining to general data and location services.
-12. [Event state machine & task syncing](../master/documentation/State%20Machine.md)
+12. [Developer console](../master/documentation/Developer.md)
+	- Endpoints used to run our developer console
+13. [Event state machine & task syncing](../master/documentation/State%20Machine.md)
 	- Details on how ActivityHub syncs events and tasks between all users' calendars, our database, and Salesforce
-13. [Data tables](../master/documentation/Tables.md)
+14. [Data tables](../master/documentation/Tables.md)
 	- Brief summaries of each table in our database
 
 ***
