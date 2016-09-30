@@ -3,7 +3,7 @@
 ## Table of contents
 #### Endpoints
 - [Get a survey](../documentation/Surveys.md#get-a-survey)
-- [Answer a survey](../documentation/GoToMeeting.md#answer-a-survey)
+- [Answer a survey](../documentation/Surveys.md#answer-a-survey)
 
 #### afterDelete triggers
 - [`survey_response`](../documentation/Surveys.md#survey_response)
