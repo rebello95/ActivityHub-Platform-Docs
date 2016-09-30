@@ -7,6 +7,7 @@
 - [Shorten a URL](#shorten-a-url)
 - [Post an analytics event](#post-an-analytics-event)
 - [Get a required client version](#get-a-required-client-version)
+- [Send internal push notification](#send-internal-push-notification)
 
 #### Internal functions
 - [searchAllContacts](../documentation/Utilities.md#searchallcontacts)
@@ -234,6 +235,43 @@ No
 ```
 {
   "VersionRequired": 9.1
+}
+```
+***
+### Send internal push notification
+**Discussion**
+
+*For internal use only.* Sends a push notification to a given user. This endpoint should generally be used when sending notifications using jobs that aren't running on the same dynos as the actual server.
+
+**File**: `/src/utilities`
+
+**Function**: `send_internal_push`
+
+**Parameters**
+- `key` (**required**) - internal key
+- `user_id` (**required**) - ID of the user to push the notification to
+- `message` (**required**) - text to send
+- `extra_data` (**required**) - JSON object, extra data
+
+**Supports internal override?** 
+No
+
+**Example request body**
+```
+{
+  "key": "XXXXX",
+  "user_id": "kdh3D2Hb9D",
+  "message": "This is a test push!",
+  "extra_data": {
+	"SomeValue": "xyz"
+  }
+}
+```
+
+**Example response**
+```
+{
+  "Sent": true
 }
 ```
 ***
