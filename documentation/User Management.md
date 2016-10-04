@@ -200,7 +200,7 @@ Yes
     ],
     "Description": "Wow this is such a good license",
     "Name": "Example license",
-    "LicenseID": "moIPrTfrWG",
+    "ID": "moIPrTfrWG",
     "Tier": 2,
     "Expires": "2017-01-01"
   },
@@ -529,6 +529,7 @@ No
       },
       "Description": "This is one of our enterprise licenses.",
       "Name": "Enterprise License XYZ",
+      "ID": "lskj3bx98X2",
       "Purchases_iOS": {
         "12Month": "com.ios.xyz.license2",
         "1Month": "com.ios.xyz.license1"
